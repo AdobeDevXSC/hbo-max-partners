@@ -303,7 +303,6 @@ header nav[aria-expanded='true'] .nav-sections .default-content-wrapper > ul {
 
 header nav[aria-expanded='true'] .nav-sections .default-content-wrapper > ul > li {
   padding: 16px 8px;
-  border-bottom: 1px solid #1d2c39;
 }
 
 header nav[aria-expanded='true'] .nav-sections .default-content-wrapper > ul > li > p {

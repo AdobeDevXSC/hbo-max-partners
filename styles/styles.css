@@ -63,7 +63,12 @@
 body {
   display: none;
   margin: 0;
-  background-color: var(--background-color);
+  background-color: #050a0a;
+  background-image: url('../images/hbomax-bg.jpg');
+  background-position: top center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
   color: var(--text-color);
   font-family: var(--body-font-family);
   font-size: var(--body-font-size-m);
@@ -71,7 +76,9 @@ body {
 }
 
 body.appear {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 header {
@@ -136,6 +143,13 @@ pre {
   background-color: var(--light-color);
   overflow-x: auto;
   white-space: pre;
+}
+
+main {
+  color: #fff;
+
+  /* grow to fill the space between the fixed nav and footer (sticky footer) */
+  flex: 1 0 auto;
 }
 
 main > div {
@@ -228,7 +242,7 @@ main > .section {
 }
 
 main > .section > div {
-  max-width: 1200px;
+  max-width: 1320px;
   margin: auto;
   padding: 0 24px;
 }
@@ -249,4 +263,17 @@ main .section.highlight {
   background-color: var(--light-color);
   margin: 0;
   padding: 40px 0;
+}
+
+/* style: full-width — breaks out of the content max-width container */
+main .section.full-width {
+  width: 100%;
+  max-width: none;
+}
+
+main .section.full-width > div {
+  max-width: none;
+  width: 100%;
+  margin-inline: 0;
+  padding-inline: 0;
 }
