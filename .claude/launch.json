@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "aem",
+      "runtimeExecutable": "aem",
+      "runtimeArgs": ["up", "--no-open"],
+      "port": 3000
+    }
+  ]
+}

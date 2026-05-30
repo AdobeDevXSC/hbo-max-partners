@@ -73,6 +73,7 @@ body {
   font-family: var(--body-font-family);
   font-size: var(--body-font-size-m);
   line-height: 1.6;
+  box-sizing: border-box;
 }
 
 body.appear {
@@ -276,4 +277,9 @@ main .section.full-width > div {
   width: 100%;
   margin-inline: 0;
   padding-inline: 0;
+  box-sizing: border-box;
+}
+
+main .section.full-width > div.default-content-wrapper {
+  padding: 0 3rem;
 }

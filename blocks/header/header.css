@@ -3,7 +3,9 @@ header .nav-wrapper {
   background-image: radial-gradient(circle at 0 50%, #1d2c39 0, #050a0a 50%);
   color: #8298ab;
   width: 100%;
-  z-index: 2;
+
+  /* keep the fixed nav (and its dropdowns) above page content like the carousel */
+  z-index: 100;
   position: fixed;
   isolation: isolate;
   transition: background-color 0.3s;
@@ -317,7 +319,6 @@ header nav[aria-expanded='true'] .nav-sections .default-content-wrapper > ul > l
 }
 
 header nav[aria-expanded='true'] .nav-sections .default-content-wrapper > ul > li > ul > li {
-  padding: 8px 0;
   color: #fff;
   font-size: var(--body-font-size-xs);
   padding: 8px 14px;
