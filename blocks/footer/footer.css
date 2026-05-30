@@ -1,20 +1,61 @@
 footer {
-  background-color: var(--light-color);
-  font-size: var(--body-font-size-xs);
+  background-color: #000;
+  color: #8298ab;
+  font-family: var(--body-font-family);
+  font-size: 0.875rem;
+  line-height: 1.6;
 }
 
 footer .footer > div {
   margin: auto;
-  max-width: 1200px;
-  padding: 40px 24px 24px;
+  max-width: 1400px;
+  padding: 48px 24px;
+  text-align: center;
 }
 
 footer .footer p {
   margin: 0;
 }
 
+/* gap between the copyright paragraph and the Privacy Policy link */
+footer .footer p + p {
+  margin-top: 1.5rem;
+}
+
+footer .footer a:any-link {
+  color: #8298ab;
+  text-decoration: underline;
+}
+
+footer .footer a:hover {
+  color: #fff;
+}
+
+/* EDS auto-converts the standalone Privacy Policy link into a .button; render it as a plain link instead */
+footer .footer .button-container {
+  margin-top: 1rem;
+}
+
+footer .footer a.button:any-link {
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  background-color: transparent;
+  color: #8298ab;
+  font-size: inherit;
+  font-weight: 400;
+  text-decoration: underline;
+  white-space: normal;
+}
+
+footer .footer a.button:hover {
+  background-color: transparent;
+  color: #fff;
+}
+
 @media (width >= 900px) {
   footer .footer > div {
-    padding: 40px 32px 24px;
+    padding: 60px 32px;
   }
 }
