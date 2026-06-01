@@ -1,4 +1,5 @@
 import { createModal } from '../modal/modal.js';
+import { fetchPlaceholders } from '../../scripts/aem.js';
 
 const PLAY_ICON = `<svg class="movie-card-button-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
   <circle cx="12" cy="12" r="11" fill="none" stroke="currentColor" stroke-width="1.5" />
@@ -10,14 +11,22 @@ const CHEVRON_ICON = `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="fal
 </svg>`;
 
 /**
+ * First path segment of the URL, used as the locale (e.g. /es/... -> "es").
+ * @returns {string} locale segment, or '' if none
+ */
+function getLocale() {
+  return window.location.pathname.split('/').filter(Boolean)[0] || '';
+}
+
+/**
  * Resolves the locale sheet from the URL path, falling back to `en`.
  * @param {object} workbook Parsed multi-sheet JSON
  * @returns {string} the sheet name to read
  */
 function resolveSheet(workbook) {
-  const segment = window.location.pathname.split('/').filter(Boolean)[0];
-  if (segment && workbook[segment] && Array.isArray(workbook[segment].data)) {
-    return segment;
+  const locale = getLocale();
+  if (locale && workbook[locale] && Array.isArray(workbook[locale].data)) {
+    return locale;
   }
   return 'en';
 }
@@ -101,9 +110,11 @@ async function openTrailer(href, title) {
 /**
  * Builds a single carousel slide for a movie row.
  * @param {object} movie row from the sheet
+ * @param {{availableNow: string, watchTrailer: string, learnMore: string}} labels
+ *   localized UI labels; a non-empty per-row videoLabel/ctaLabel overrides these
  * @returns {HTMLLIElement}
  */
-function buildSlide(movie) {
+function buildSlide(movie, labels) {
   const slide = document.createElement('li');
   slide.className = 'movie-carousel-slide';
 
@@ -119,10 +130,10 @@ function buildSlide(movie) {
     card.append(img);
   }
 
-  // Static "Available Now" badge (uppercased + flare background via CSS).
+  // "Available Now" badge (localized; uppercased + flare background via CSS).
   const badge = document.createElement('div');
   badge.className = 'movie-card-badge';
-  badge.textContent = 'Available Now';
+  badge.textContent = labels.availableNow;
   card.append(badge);
 
   // Hover content: category, description, optional button.
@@ -152,7 +163,7 @@ function buildSlide(movie) {
     button.type = 'button';
     button.className = 'movie-card-button movie-card-button-video';
     const label = document.createElement('span');
-    label.textContent = movie.videoLabel || 'Watch Trailer';
+    label.textContent = (movie.videoLabel || '').trim() || labels.watchTrailer;
     button.append(label);
     button.insertAdjacentHTML('beforeend', PLAY_ICON);
     button.addEventListener('click', () => openTrailer(videoUrl, movie.title));
@@ -163,7 +174,7 @@ function buildSlide(movie) {
     cta.href = ctaUrl;
     cta.target = '_blank';
     cta.rel = 'noopener noreferrer';
-    cta.textContent = movie.ctaLabel || 'Learn More';
+    cta.textContent = (movie.ctaLabel || '').trim() || labels.learnMore;
     content.append(cta);
   }
 
@@ -217,9 +228,19 @@ export default async function decorate(block) {
   block.textContent = '';
   if (!movies.length) return;
 
+  // Localized UI labels from per-locale placeholders (with fallbacks).
+  // Per-row videoLabel/ctaLabel override these when set.
+  const locale = getLocale();
+  const placeholders = await fetchPlaceholders(locale ? `/${locale}` : 'default');
+  const labels = {
+    availableNow: placeholders.availableNow || 'Available Now',
+    watchTrailer: placeholders.watchTrailer || 'Watch Trailer',
+    learnMore: placeholders.learnMore || 'Learn More',
+  };
+
   const track = document.createElement('ul');
   track.className = 'movie-carousel-track';
-  movies.forEach((movie) => track.append(buildSlide(movie)));
+  movies.forEach((movie) => track.append(buildSlide(movie, labels)));
 
   const prev = document.createElement('button');
   prev.type = 'button';
