@@ -21,7 +21,7 @@
 
   /* fonts */
   --body-font-family: max-sans, gilroy, sans-serif;
-  --heading-font-family: gilroy, max-sans, sans-serif;
+  --heading-font-family: max-sans, gilroy, sans-serif;
 
   /* body sizes */
   --body-font-size-m: 22px;
@@ -248,6 +248,10 @@ main > .section > div {
   padding: 0 24px;
 }
 
+main > .section > .default-content-wrapper {
+  margin: 3rem 0;
+}
+
 main > .section:first-of-type {
   margin-top: 0;
 }
@@ -282,4 +286,10 @@ main .section.full-width > div {
 
 main .section.full-width > div.default-content-wrapper {
   padding: 0 3rem;
+}
+
+main .section.text-center > div {
+  text-align: center;
+  margin-right: auto;
+  margin-left: auto;
 }
