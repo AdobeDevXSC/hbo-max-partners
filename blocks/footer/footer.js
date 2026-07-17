@@ -1,5 +1,6 @@
 import { getMetadata } from '../../scripts/aem.js';
 import { loadFragment } from '../fragment/fragment.js';
+import { addRegionTrigger } from '../region-selector/region-selector.js';
 
 /**
  * loads and decorates the footer
@@ -15,6 +16,9 @@ export default async function decorate(block) {
   block.textContent = '';
   const footer = document.createElement('div');
   while (fragment.firstElementChild) footer.append(fragment.firstElementChild);
+
+  // add the "Change region" trigger that opens the region-selector modal
+  await addRegionTrigger(footer.querySelector(':scope > div') || footer);
 
   block.append(footer);
 }
