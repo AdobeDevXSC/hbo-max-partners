@@ -1,0 +1,119 @@
+/* Footer trigger ---------------------------------------------------------- */
+
+.region-selector-trigger-wrapper {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.region-selector-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.region-selector-trigger:hover {
+  background: transparent;
+  color: #fff;
+}
+
+.region-selector-trigger svg {
+  width: 18px;
+  height: 18px;
+  flex: none;
+}
+
+/* Modal body -------------------------------------------------------------- */
+
+.region-selector-modal.region-selector-modal {
+  max-width: 1000px;
+  background-color: #fff;
+  color: var(--text-color);
+}
+
+/* doubled class wins the specificity tie with modal.css so the X is dark on the white modal */
+.region-selector-modal.region-selector-modal .close-button {
+  color: var(--text-color);
+}
+
+.region-selector-modal.region-selector-modal .close-button .icon.icon-close,
+.region-selector-modal.region-selector-modal .close-button .icon.icon-close::before,
+.region-selector-modal.region-selector-modal .close-button .icon.icon-close::after {
+  color: var(--text-color);
+  background-color: var(--text-color);
+}
+
+.region-selector-modal.region-selector-modal .close-button .icon.icon-close {
+  background-color: transparent;
+}
+
+.region-selector-title {
+  margin: 0 0 12px;
+  font-size: var(--heading-font-size-l);
+  font-weight: 700;
+}
+
+.region-selector-description {
+  margin: 0 0 50px;
+  color: var(--dark-color);
+  font-size: var(--body-font-size-s);
+}
+
+.region-selector-groups {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px 24px;
+}
+
+.region-selector-group-heading {
+  margin: 0 0 16px;
+  font-size: var(--body-font-size-s);
+  font-weight: 700;
+}
+
+.region-selector-group ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.region-selector-group li {
+  margin: 0 0 12px;
+}
+
+.region-selector-link:any-link {
+  color: var(--link-color);
+  font-size: var(--body-font-size-xs);
+  text-decoration: none;
+}
+
+.region-selector-link:hover {
+  text-decoration: underline;
+}
+
+.region-selector-link.is-current {
+  color: var(--text-color);
+  font-weight: 700;
+  cursor: default;
+}
+
+@media (width >= 600px) {
+  .region-selector-groups {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (width >= 900px) {
+  .region-selector-groups {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
