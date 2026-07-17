@@ -11,42 +11,58 @@ const CHEVRON_ICON = `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="fal
 </svg>`;
 
 /**
- * First path segment of the URL, used as the locale (e.g. /es/... -> "es").
- * @returns {string} locale segment, or '' if none
+ * Locale prefix for the current page, without a trailing slash. Handles the
+ * region/language structure (/us/es/... -> "/us/es") and legacy flat locales
+ * (/en/... -> "/en"). Returns '' at the site root. Used to locate the correct
+ * per-locale placeholders.json.
+ * @returns {string}
  */
-function getLocale() {
-  return window.location.pathname.split('/').filter(Boolean)[0] || '';
+function getLocalePrefix() {
+  const [region, language] = window.location.pathname.split('/').filter(Boolean);
+  if (region && language) return `/${region}/${language}`;
+  if (region) return `/${region}`;
+  return '';
+}
+
+// Values (any locale) that mean a row should be hidden. The `show` column is
+// authored/translated per locale, so we can't match a single "TRUE" — instead a
+// row is shown unless it is empty or an explicit falsey value. This keeps the
+// carousel from going blank when the boolean is translated (e.g. 真実, VRAI).
+const HIDE_VALUES = new Set([
+  '', 'FALSE', 'FALSO', 'FAUX', 'FALSCH', 'NO', 'NON', 'NEIN', 'N', '0',
+  '假', '否', '偽', 'いいえ', 'असत्य', 'नहीं', 'गलत',
+]);
+
+/**
+ * Whether a row's `show` flag marks it visible, tolerant of localized values.
+ * @param {object} row a sheet row
+ * @returns {boolean}
+ */
+function isShown(row) {
+  return !HIDE_VALUES.has(String(row.show ?? '').trim().toUpperCase());
 }
 
 /**
- * Resolves the locale sheet from the URL path, falling back to `en`.
- * @param {object} workbook Parsed multi-sheet JSON
- * @returns {string} the sheet name to read
- */
-function resolveSheet(workbook) {
-  const locale = getLocale();
-  if (locale && workbook[locale] && Array.isArray(workbook[locale].data)) {
-    return locale;
-  }
-  return 'en';
-}
-
-/**
- * Pulls the rows for the current locale out of the workbook (en fallback),
- * filtered to those flagged to show, preserving sheet order.
- * @param {object} workbook Parsed JSON (multi-sheet or single-sheet)
+ * Pulls the movie rows out of the workbook's `data` sheet, filtered to those
+ * flagged to show, preserving sheet order. Each locale points the block at its
+ * own data file, so there is no per-language sheet lookup.
+ * @param {object} workbook Parsed JSON (single-sheet or multi-sheet)
  * @returns {Array<object>} movie rows to render
  */
 function getRows(workbook) {
   let rows = [];
   if (Array.isArray(workbook.data)) {
-    // single-sheet workbook
+    // single-sheet workbook: rows live in the top-level `data` array
     rows = workbook.data;
-  } else {
-    const sheet = resolveSheet(workbook);
-    rows = (workbook[sheet] && workbook[sheet].data) || (workbook.en && workbook.en.data) || [];
+  } else if (workbook.data && Array.isArray(workbook.data.data)) {
+    // multi-sheet workbook: read the named `data` sheet
+    rows = workbook.data.data;
+  } else if (Array.isArray(workbook[':names']) && workbook[':names'].length) {
+    // legacy multi-sheet workbook without a `data` sheet: use the first sheet
+    const [first] = workbook[':names'];
+    rows = (workbook[first] && workbook[first].data) || [];
   }
-  return rows.filter((row) => String(row.show).trim().toUpperCase() === 'TRUE');
+  return rows.filter(isShown);
 }
 
 /**
@@ -230,12 +246,12 @@ export default async function decorate(block) {
 
   // Localized UI labels from per-locale placeholders (with fallbacks).
   // Per-row videoLabel/ctaLabel override these when set.
-  const locale = getLocale();
-  const placeholders = await fetchPlaceholders(locale ? `/${locale}` : 'default');
+  const prefix = getLocalePrefix();
+  const placeholders = await fetchPlaceholders(prefix || 'default');
   const labels = {
-    availableNow: placeholders.availableNow || 'Available Now',
-    watchTrailer: placeholders.watchTrailer || 'Watch Trailer',
-    learnMore: placeholders.learnMore || 'Learn More',
+    availableNow: (placeholders.availableNow || '').trim() || 'Available Now',
+    watchTrailer: (placeholders.watchTrailer || '').trim() || 'Watch Trailer',
+    learnMore: (placeholders.learnMore || '').trim() || 'Learn More',
   };
 
   const track = document.createElement('ul');
