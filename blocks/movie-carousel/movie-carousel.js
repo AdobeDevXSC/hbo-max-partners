@@ -24,22 +24,26 @@ function getLocalePrefix() {
   return '';
 }
 
-// Values (any locale) that mean a row should be hidden. The `show` column is
-// authored/translated per locale, so we can't match a single "TRUE" — instead a
-// row is shown unless it is empty or an explicit falsey value. This keeps the
-// carousel from going blank when the boolean is translated (e.g. 真実, VRAI).
-const HIDE_VALUES = new Set([
-  '', 'FALSE', 'FALSO', 'FAUX', 'FALSCH', 'NO', 'NON', 'NEIN', 'N', '0',
-  '假', '否', '偽', 'いいえ', 'असत्य', 'नहीं', 'गलत',
+// Values of the `show` flag that mean a row is visible. The column is
+// authored/translated per locale, so we match the localized word for "true"
+// (en TRUE, es VERDADERO, de WAHR, fr VRAI, zh 真的, ja 真実, hi सत्य).
+const SHOW_VALUES = new Set([
+  'TRUE',
+  'VERDADERO',
+  'WAHR',
+  'VRAI',
+  '真的',
+  '真実',
+  'सत्य',
 ]);
 
 /**
- * Whether a row's `show` flag marks it visible, tolerant of localized values.
+ * Whether a row's `show` flag marks it visible, matching the localized "true".
  * @param {object} row a sheet row
  * @returns {boolean}
  */
 function isShown(row) {
-  return !HIDE_VALUES.has(String(row.show ?? '').trim().toUpperCase());
+  return SHOW_VALUES.has(String(row.show ?? '').trim().toUpperCase());
 }
 
 /**
